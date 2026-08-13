@@ -3,7 +3,8 @@ export const ADMIN_NAV = [
     { to: '/admin/students', label: 'Students' },
     { to: '/admin/teachers', label: 'Teachers' },
     { to: '/admin/courses', label: 'Courses' },
-    { to: '/admin/exams', label: 'Exams' }
+    { to: '/admin/exams', label: 'Exams' },
+    { to: '/admin/registrations', label: 'Registrations' }
 ]
 
 export const TEACHER_NAV = [

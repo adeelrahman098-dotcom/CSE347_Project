@@ -54,6 +54,8 @@ function StudentResults() {
         if (user) {
             fetchResults()
         } else {
+            // This branch represents an invalid local session, not an external synchronization.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setError('Please login to view your results')
             setLoading(false)
         }

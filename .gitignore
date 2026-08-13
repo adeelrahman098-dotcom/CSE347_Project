@@ -4,6 +4,8 @@ node_modules/
 
 # Environment / secrets
 .env
+.npm-cache/
+Frontend/dist/
 .env.*
 !.env.example
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState } from 'react'
 
 export const AuthContext = createContext()
@@ -8,7 +9,7 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem('iccmsUser')
 
         if (storedUser) {
-            return JSON.parse(storedUser)
+            try { return JSON.parse(storedUser) } catch { localStorage.removeItem('iccmsUser'); return null }
         }
 
         return null
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('iccmsUser')
+        localStorage.removeItem('iccmsToken')
         setUser(null)
     }
 

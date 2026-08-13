@@ -1,4 +1,6 @@
 const userModel = require('../models/userModel')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 
 // Get all users
@@ -77,8 +79,10 @@ const loginUser = async (req, res) => {
         }
 
 
-        // Compare password
-        if (password !== user.password) {
+        const passwordMatches = user.password.startsWith('$2')
+            ? await bcrypt.compare(password, user.password)
+            : password === user.password
+        if (!passwordMatches) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
@@ -101,10 +105,15 @@ const loginUser = async (req, res) => {
         }
 
 
+        if (!user.password.startsWith('$2')) {
+            await userModel.updatePassword(user.user_id, await bcrypt.hash(password, 12))
+        }
+        const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '8h' })
         res.json({
             success: true,
             message: 'Login successful',
-            data: userData
+            data: userData,
+            token
         })
 
     } catch (error) {
@@ -118,8 +127,14 @@ const loginUser = async (req, res) => {
 }
 
 
-module.exports = {
-    getUsers,
-    getUser,
-    loginUser
+const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body
+    if (!currentPassword || !newPassword || newPassword.length < 8) return res.status(400).json({ success: false, message: 'Provide your current password and a new password of at least 8 characters' })
+    const user = await userModel.getUserByEmail(req.user.email)
+    const matches = user.password.startsWith('$2') ? await bcrypt.compare(currentPassword, user.password) : currentPassword === user.password
+    if (!matches) return res.status(401).json({ success: false, message: 'Current password is incorrect' })
+    await userModel.updatePassword(req.user.user_id, await bcrypt.hash(newPassword, 12))
+    res.json({ success: true, message: 'Password updated successfully' })
 }
+
+module.exports = { getUsers, getUser, loginUser, changePassword }

@@ -36,12 +36,7 @@ function Home() {
                 )}
 
                 {!user && (
-                    <button
-                        className="login-button"
-                        onClick={() => navigate('/login')}
-                    >
-                        Login
-                    </button>
+                    <><button className="login-button" onClick={() => navigate('/login')}>Login</button><button className="login-button" onClick={() => navigate('/register')}>Register</button></>
                 )}
 
             </section>

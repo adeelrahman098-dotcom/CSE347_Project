@@ -1,6 +1,8 @@
 import { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext.jsx'
+import { getDashboardPathForRole } from '../utils/roleRoutes'
+import { apiUrl } from '../config/api'
 
 function Login() {
     const { setUser } = useContext(AuthContext)
@@ -21,7 +23,7 @@ function Login() {
 
         try {
             const response = await fetch(
-                'http://localhost:5000/api/users/login',
+                apiUrl('/api/users/login'),
                 {
                     method: 'POST',
                     headers: {
@@ -46,6 +48,7 @@ function Login() {
                 'iccmsUser',
                 JSON.stringify(data.data)
             )
+            localStorage.setItem('iccmsToken', data.token)
 
             // Update AuthContext immediately
             setUser(data.data)
@@ -54,10 +57,7 @@ function Login() {
 
             console.log('Logged in user:', data.data)
 
-            // Redirect student to student dashboard
-            if (data.data.role === 'STUDENT') {
-                navigate('/student/dashboard')
-            }
+            navigate(getDashboardPathForRole(data.data.role))
 
         } catch (error) {
             console.error(error)
@@ -147,6 +147,8 @@ function Login() {
                 <Link to="/">
                     Back to Home
                 </Link>
+                <br />
+                <Link to="/register">Create a new account</Link>
 
             </div>
 

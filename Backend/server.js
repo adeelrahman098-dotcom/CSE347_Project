@@ -2,6 +2,9 @@ require('dotenv').config()
 
 const express = require('express')
 const cors = require('cors')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
+const errorHandler = require('./middleware/errorHandler')
 
 const db = require('./config/db')
 
@@ -22,14 +25,17 @@ const paymentRoutes = require('./routes/paymentRoutes')
 const questionRoutes = require('./routes/questionRoutes')
 const reportRoutes = require('./routes/reportRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const registrationRoutes = require('./routes/registrationRoutes')
 
 const app = express()
 
 const PORT = process.env.PORT || 5000
 
 // Middleware
-app.use(cors())
+app.use(helmet())
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }))
 app.use(express.json())
+app.use('/api/users/login', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }))
 
 // Home route
 app.get('/', async (req, res) => {
@@ -69,6 +75,8 @@ app.use('/api/payments', paymentRoutes)
 app.use('/api/questions', questionRoutes)
 app.use('/api/reports', reportRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/registrations', registrationRoutes)
+app.use(errorHandler)
 
 // Start server
 app.listen(PORT, () => {

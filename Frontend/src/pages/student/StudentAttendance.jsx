@@ -93,6 +93,8 @@ function StudentAttendance() {
         if (user?.student_id) {
             fetchAttendance()
         } else {
+            // This branch represents an invalid local session, not an external synchronization.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setError(
                 'Please login again to view your attendance'
             )

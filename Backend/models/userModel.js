@@ -63,9 +63,14 @@ const getUserByEmail = async (email) => {
     return rows[0]
 }
 
+const updatePassword = async (userId, password) => {
+    const [result] = await db.query('UPDATE users SET password = ? WHERE user_id = ?', [password, userId])
+    return result.affectedRows
+}
 
 module.exports = {
     getAllUsers,
     getUserById,
-    getUserByEmail
+    getUserByEmail,
+    updatePassword
 }
